@@ -55,6 +55,42 @@ SitemapStream.prototype._transform = function(chunk, encoding, callback) {
 		this.push('</priority>', 'utf-8');
 	}
 
+	if (chunk.video) {
+		this.push('<video:video>', 'utf-8');
+		//support for videos
+
+		if (chunk.video.duration) {
+			this.push('<video:duration>', 'utf-8');
+			this.push(chunk.video.duration.encodeHTML(), 'utf-8');
+			this.push('</video:duration>', 'utf-8');
+		}
+
+		if (chunk.video.contentLoc) {
+			this.push('<video:content_loc>', 'utf-8');
+			this.push(chunk.video.contentLoc.encodeHTML(), 'utf-8');
+			this.push('</video:content_loc>', 'utf-8');
+		}
+
+		if (chunk.video.description) {
+			this.push('<video:description>', 'utf-8');
+			this.push(chunk.video.description.encodeHTML(), 'utf-8');
+			this.push('</video:description>', 'utf-8');
+		}
+
+		if (chunk.video.title) {
+			this.push('<video:title>', 'utf-8');
+			this.push(chunk.video.title.encodeHTML(), 'utf-8');
+			this.push('</video:title>', 'utf-8');
+		}
+
+		if (chunk.video.thumbnailLoc) {
+			this.push('<video:thumbnail_loc>', 'utf-8');
+			this.push(chunk.video.thumbnailLoc.encodeHTML(), 'utf-8');
+			this.push('</video:thumbnail_loc>', 'utf-8');
+		}
+		this.push('</video:video>', 'utf-8');
+	}
+
 	this.push('</url>', 'utf-8');
 	callback();
 };
