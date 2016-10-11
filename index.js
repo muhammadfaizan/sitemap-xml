@@ -21,9 +21,7 @@ if (!String.prototype.encodeHTML) {
 }
 
 SitemapStream.prototype._transform = function(chunk, encoding, callback) {
-	var loc = function(path){
-		return (this.host + path).encodeHTML();
-	}
+
 	if (!this._headOutputted) {
 		this.push('<?xml version="1.0" encoding="UTF-8"?>\r\n', 'utf-8');
 		this.push('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', 'utf-8');
@@ -105,6 +103,7 @@ SitemapStream.prototype._flush = function(callback) {
 };
 
 module.exports = function(host) {
+	host = host || "";
 	if (typeof host != 'string'){
 		throw new Error("Host must be string");
 	}
