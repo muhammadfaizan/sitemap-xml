@@ -3,9 +3,10 @@
 var stream = require('stream');
 var util = require('util');
 
-function SitemapStream() {
+function SitemapStream(host) {
 	stream.Transform.call(this, { objectMode: true });
 	this._headOutputted = false;
+	this.host = host;
 }
 
 util.inherits(SitemapStream, stream.Transform);
@@ -20,6 +21,9 @@ if (!String.prototype.encodeHTML) {
 }
 
 SitemapStream.prototype._transform = function(chunk, encoding, callback) {
+	var loc = function(path){
+		return (this.host + path).encodeHTML();
+	}
 	if (!this._headOutputted) {
 		this.push('<?xml version="1.0" encoding="UTF-8"?>\r\n', 'utf-8');
 		this.push('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', 'utf-8');
@@ -34,7 +38,7 @@ SitemapStream.prototype._transform = function(chunk, encoding, callback) {
 
 	this.push('<url>', 'utf-8');
 	this.push('<loc>', 'utf-8');
-	this.push(chunk.loc.encodeHTML(), 'utf-8');
+	this.push((this.host + chunk.loc).encodeHTML(), 'utf-8');
 	this.push('</loc>', 'utf-8');
 
 	if (chunk.lastmod) {
@@ -100,6 +104,12 @@ SitemapStream.prototype._flush = function(callback) {
 	callback();
 };
 
-module.exports = function() {
-	return new SitemapStream();
+module.exports = function(host) {
+	if (typeof host != 'string'){
+		throw new Error("Host must be string");
+	}
+	if (host.lastIndexOf('/') == host.length-1){
+		host = host.slice(0, host.length-1);
+	}
+	return new SitemapStream(host);
 };
